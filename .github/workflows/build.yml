@@ -23,7 +23,7 @@ jobs:
         python-version: "3.10"
     - name: Install dependencies
       run: |
-        sudo apt install python3-gi git python3-setuptools python3-stdeb python-all dh-python
+        sudo apt install python3-gi git python3-setuptools python3-stdeb python3-all dh-python
     - name: Setup
       run: |
         python ./setup.py build
