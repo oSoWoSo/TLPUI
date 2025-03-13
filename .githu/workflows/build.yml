@@ -1,0 +1,60 @@
+name: Setup TLPUI
+
+on:
+  push:
+    branches: [ master ]
+    tags:
+     - '*'
+  pull_request:
+    branches: [ master ]
+
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v3
+      with:
+        python-version: "3.10"
+    - name: Install dependencies
+      run: |
+        sudo apt install python3-gi git python3-setuptools python3-stdeb python-all dh-python
+    - name: Setup
+      run: |
+        python ./setup.py build
+    - name: Test
+      run: |
+        python -m unittest test/test_tlp_configs.py
+        python -m unittest test/test_tlp_settings.py
+
+  appimage:
+    name: "AppImage"
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Build AppImage
+      run: |
+        cd AppImage
+        mkdir -p out
+        ./pkg2appimage.sh
+
+  save:
+    name: "Saving AppImage"
+    needs: appimage
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Save AppImage
+      run: |
+        mv AppImage/out/*.AppImage ./tlpui.AppImage 
+        git add tlpui.AppImage
+        git commit -m "Adding testing AppImage"
+        git push
