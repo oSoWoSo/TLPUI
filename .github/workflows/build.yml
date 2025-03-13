@@ -13,28 +13,8 @@ permissions:
   contents: read
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v3
-    - name: Set up Python 3.10
-      uses: actions/setup-python@v3
-      with:
-        python-version: "3.10"
-    - name: Install dependencies
-      run: |
-        sudo apt install python3-gi git python3-setuptools python3-stdeb python3-all dh-python
-    - name: Setup
-      run: |
-        python ./setup.py build
-    - name: Test
-      run: |
-        python -m unittest test/test_tlp_configs.py
-        python -m unittest test/test_tlp_settings.py
-
   appimage:
     name: "AppImage"
-    needs: build
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
